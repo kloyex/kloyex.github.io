@@ -2,14 +2,7 @@
 * text=auto
 
 # Jekyll source files must use LF for reliable front matter parsing.
-*.md text eol=lf
-*.html text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-*.rb text eol=lf
-*.scss text eol=lf
-*.css text eol=lf
-*.js text eol=lf
+*.{md,html,yml,yaml,rb,scss,css,js} text eol=lf
 Gemfile text eol=lf
 
 # Force bash scripts to always use LF line endings so that if a repo is accessed
