@@ -1,0 +1,891 @@
+<!doctype html><html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="游戏编程模式" /><meta property="og:locale" content="zh_CN" /><meta name="description" content="梳理《游戏编程模式》中常见设计模式与序列型模式，包括命令模式、享元模式、观察者模式、原型模式、单例模式、状态模式、游戏循环、更新方法和双缓冲，并结合 Unity 与游戏客户端开发场景理解其应用。" /><meta name="twitter:description" property="og:description" content="梳理《游戏编程模式》中常见设计模式与序列型模式，包括命令模式、享元模式、观察者模式、原型模式、单例模式、状态模式、游戏循环、更新方法和双缓冲，并结合 Unity 与游戏客户端开发场景理解其应用。" /><link rel="canonical" href="https://kloyex.github.io/posts/game-programming-patterns/" /><meta property="og:url" content="https://kloyex.github.io/posts/game-programming-patterns/" /><meta property="og:site_name" content="Kloyex" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2026-06-18T00:00:00+08:00" /><meta property="article:modified_time" content="2026-07-16T01:19:33+08:00" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="游戏编程模式" /><meta name="twitter:site" content="@kloyex" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-07-16T01:19:33+08:00","datePublished":"2026-06-18T00:00:00+08:00","description":"梳理《游戏编程模式》中常见设计模式与序列型模式，包括命令模式、享元模式、观察者模式、原型模式、单例模式、状态模式、游戏循环、更新方法和双缓冲，并结合 Unity 与游戏客户端开发场景理解其应用。","headline":"游戏编程模式","mainEntityOfPage":{"@type":"WebPage","@id":"https://kloyex.github.io/posts/game-programming-patterns/"},"url":"https://kloyex.github.io/posts/game-programming-patterns/"}</script><title>游戏编程模式 | Kloyex</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3/dist/js/glightbox.min.js,npm/clipboard@2/dist/clipboard.min.js,npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/zh.js,npm/dayjs@1/plugin/relativeTime.js,npm/dayjs@1/plugin/localizedFormat.js,npm/tocbot@4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="/app.min.js?baseurl=&register=true" ></script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="/assets/img/avatar.png" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Kloyex</a><p class="site-subtitle fst-italic mb-0">Game Client Developer</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>首页</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream"></i> <span>分类</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tags"></i> <span>标签</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive"></i> <span>归档</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>关于</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"><div class="btn-group dropup"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle" data-bs-toggle="dropdown" ><i class="fa-regular fa-sun" data-theme-mode="light"></i><i class="fa-regular fa-moon" data-theme-mode="dark"></i><i class="fa-solid fa-display" data-theme-mode="system"></i></button><ul class="dropdown-menu rounded-3 mb-1 p-1"><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="light"><i class="fa-regular fa-sun" data-theme-mode="light"></i>浅色</button><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="dark"><i class="fa-regular fa-moon" data-theme-mode="dark"></i>深色</button><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="system"><i class="fa-solid fa-display" data-theme-mode="system"></i>跟随系统</button></ul></div><span class="icon-border"></span> <a href="https://github.com/kloyex" aria-label="github" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="https://twitter.com/kloyex" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="javascript:void(location.href = 'mailto:' + ['example','domain.com'].join('@'))" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">首页</a> </span> <span>游戏编程模式</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> 文章</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="搜索..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">取消</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>游戏编程模式</h1><p class="post-desc fw-light mb-4">梳理《游戏编程模式》中常见设计模式与序列型模式，包括命令模式、享元模式、观察者模式、原型模式、单例模式、状态模式、游戏循环、更新方法和双缓冲，并结合 Unity 与游戏客户端开发场景理解其应用。</p><div class="post-meta text-muted"> <span> 发表于 <time data-ts="1781712000" data-df="YYYY/MM/DD" data-bs-toggle="tooltip" data-bs-placement="bottom" > 2026/06/18 </time> </span> <span> 更新于 <time data-ts="1784135973" data-df="YYYY/MM/DD" data-bs-toggle="tooltip" data-bs-placement="bottom" > 2026/07/16 </time> </span><div class="d-flex justify-content-between"> <span> 作者 <em> <a href="https://github.com/kloyex">kloyex</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="15002 字" > <em>83 分钟</em>阅读</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">游戏编程模式</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">文章内容</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">游戏编程模式</div><button id="toc-popup-close" type="button" class="btn-close btn-sm mx-3" aria-label="Close"></button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><h1 id="游戏编程模式">游戏编程模式</h1><h2 id="命令模式command-pattern"><span class="me-2">命令模式（Command Pattern）：</span><a href="#命令模式command-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>把一次“操作请求”封装成一个命令对象，由调用方创建命令，由执行方统一执行。</p><p>它的核心作用是：</p><blockquote><p>将“发起操作”和“执行操作”解耦。</p></blockquote><p>在游戏客户端中，命令模式常用于：</p><ul><li><p>玩家输入</p><div class="language-plaintext highlighter-rouge"><div class="code-header"> <span data-label-text="Plaintext"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre>Command* command = inputHandler.handleInput();
+if (command)    
+{      
+    command-&gt;execute(actor);    
+}
+</pre></table></code></div></div><p>将玩家输入与角色操作解耦，输入系统不需要知道角色具体怎么移动、攻击；角色系统也不需要关心输入来自键盘、手柄还是 AI。</p><li><p>技能释放</p><li><p>战斗指令</p><li><p>回放系统</p><li><p>撤销/重做</p><div class="language-plaintext highlighter-rouge"><div class="code-header"> <span data-label-text="Plaintext"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre>    function makeMoveUnitCommand(unit, x, y) {
+      var xBefore, yBefore;
+      return {
+        execute: function() {
+          xBefore = unit.x();
+          yBefore = unit.y();
+          unit.moveTo(x, y);
+        },
+        undo: function() {
+          unit.moveTo(xBefore, yBefore);
+        }
+      };
+    }
+</pre></table></code></div></div><li><p>网络同步</p><p><a href="/assets/img/posts/2026-06-18-game-programming-patterns/command-flow.png" class="popup img-link shimmer"><img src="/assets/img/posts/2026-06-18-game-programming-patterns/command-flow.png" alt="命令模式中的命令流" loading="lazy"></a></p><p>命令模式把玩家输入、AI 行为、网络消息统一抽象成命令流，再由战斗系统按顺序执行，是多人游戏输入同步和回放系统的重要基础。</p></ul><hr /><p><strong>反射</strong>：让程序在运行时检查和操作类、对象、字段、方法等类型信息的机制。</p><p><strong>闭包</strong>：一个函数携带了它所引用的外部变量，使这些变量在函数外部仍能被继续访问和修改。</p><h2 id="享元模式flyweight-pattern"><span class="me-2">享元模式（Flyweight Pattern）</span><a href="#享元模式flyweight-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>把大量对象中相同的部分提取出来共享，避免重复创建，节省内存。</p><p>“享元”可以理解为：<strong>共享的最小对象单元。</strong></p><div class="language-plaintext highlighter-rouge"><div class="code-header"> <span data-label-text="Plaintext"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre><td class="rouge-code"><pre>    class Terrain
+    {
+    public:
+      Terrain(int movementCost, bool isWater,
+             Texture texture)
+      : moveCost_(moveCost),
+        isWater_(isWater),
+        texture_(texture)
+      {}
+
+      int getMoveCost() const { return moveCost_; }
+      bool isWater() const { return isWater_; }
+      const Texture&amp; getTexture() const
+      {
+      return texture_;
+      }
+
+    private:
+      int moveCost_;
+      bool isWater_;
+      Texture texture_;
+    };
+    
+    class World
+    {
+    public:
+      World()
+      : grassTerrain_(1, false, GRASS_TEXTURE),
+        hillTerrain_(3, false, HILL_TEXTURE),
+        riverTerrain_(2, true, RIVER_TEXTURE)
+      {}
+
+    private:
+      Terrain grassTerrain_;
+      Terrain hillTerrain_;
+      Terrain riverTerrain_;
+      // Other stuff...
+    };
+</pre></table></code></div></div><h2 id="观察者模式observer-pattern"><span class="me-2">观察者模式（Observer Pattern）</span><a href="#观察者模式observer-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>定义：</strong> 观察者模式用于在对象之间建立一种“一对多”的依赖关系。当一个对象状态发生变化时，所有依赖它的对象都会自动收到通知并更新。</p><p><strong>核心思想：</strong></p><blockquote><p>被观察者不直接依赖具体观察者，而是通过通知机制广播事件。</p></blockquote><p><strong>主要角色：</strong></p><ul><li><strong>Subject / 被观察者</strong>：事件的发布者，负责维护观察者列表，并在状态变化时发送通知。<li><strong>Observer / 观察者</strong>：事件的接收者，收到通知后执行自己的逻辑。</ul><p><strong>游戏中的常见场景：</strong></p><ul><li>玩家血量变化 → UI 血条刷新<li>玩家死亡 → 播放死亡动画、弹出结算界面<li>背包物品变化 → 背包 UI 更新<li>任务进度变化 → 任务面板刷新<li>网络状态变化 → 提示断线或重连</ul><p><strong>优点：</strong></p><ul><li>降低对象之间的耦合<li>一个事件可以通知多个系统<li>方便扩展新的响应逻辑</ul><p><strong>缺点：</strong></p><ul><li>事件链过多时，调用关系不直观<li>需要注意注册和注销，避免内存泄漏或重复监听</ul><p><strong>一句话总结：</strong>观察者模式通过“订阅—通知”机制，让一个对象状态变化时自动通知多个相关对象，从而实现系统之间的解耦。</p><p><strong>与事件的区别</strong>：观察者模式描述的是“一个对象变化，通知多个对象”的结构；事件通常是实现这种结构的具体方式。</p><p><strong>友元</strong>就是被类特别授权的函数或类，可以访问这个类的私有成员。</p><h2 id="原型模式prototype-pattern"><span class="me-2">原型模式（Prototype Pattern）</span><a href="#原型模式prototype-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>定义：</strong> 原型模式用于通过复制已有对象来创建新对象，而不是每次都从零开始创建。</p><p><strong>核心思想：</strong></p><blockquote><p>先准备一个原型对象，需要新对象时直接克隆它，再修改个别属性。</p></blockquote><p><strong>主要角色：</strong></p><ul><li><strong>Prototype / 原型接口</strong>：定义克隆方法。<li><strong>ConcretePrototype / 具体原型</strong>：实现克隆逻辑的具体对象。<li><strong>Client / 客户端</strong>：通过克隆原型对象来创建新对象。</ul><p><strong>游戏中的常见场景：</strong></p><ul><li>怪物模板 → 生成多个怪物实例<li>子弹模板 → 发射时生成子弹<li>装备模板 → 掉落时生成具体装备<li>技能模板 → 释放时生成技能实例<li>特效模板 → 播放爆炸、治疗、命中特效<li>Unity Prefab → 通过 <code class="language-plaintext highlighter-rouge">Instantiate</code> 创建对象实例</ul><p><strong>优点：</strong></p><ul><li>适合批量创建相似对象<li>减少重复初始化代码<li>创建复杂对象更方便<li>可以通过模板快速生成不同实例</ul><p><strong>缺点：</strong></p><ul><li>深拷贝实现可能比较复杂<li>浅拷贝容易导致对象共享同一份引用数据<li>对象结构复杂时，克隆逻辑不容易维护</ul><p><strong>一句话总结：</strong> 原型模式通过“复制已有对象”来创建新对象，适合游戏中怪物、子弹、装备、技能、特效等大量相似对象的生成。</p><p><strong>与对象池的区别：</strong> 原型模式关注“如何根据模板创建对象”；对象池关注“如何复用已经创建好的对象，减少频繁创建和销毁”。</p><p><strong>注意点：</strong> 游戏开发中要区分共享配置和独立状态。模型、基础属性、资源路径可以共享；当前位置、当前血量、当前目标等运行状态必须独立。</p><h2 id="单例模式singleton-pattern"><span class="me-2">单例模式（Singleton Pattern）</span><a href="#单例模式singleton-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>定义：</strong> 单例模式用于保证一个类在程序运行期间只有一个实例，并提供一个全局访问点。</p><p><strong>核心思想：</strong></p><blockquote><p>一个类只创建一个对象，其他地方通过同一个入口访问它。</p></blockquote><p><strong>主要角色：</strong></p><ul><li><strong>Singleton / 单例类</strong>：负责创建并保存唯一实例。<li><strong>Instance / 全局访问点</strong>：提供外部访问单例对象的入口。</ul><p><strong>游戏中的常见场景：</strong></p><ul><li>音频管理器：<code class="language-plaintext highlighter-rouge">AudioManager</code><li>输入管理器：<code class="language-plaintext highlighter-rouge">InputManager</code><li>配置管理器：<code class="language-plaintext highlighter-rouge">ConfigManager</code><li>存档管理器：<code class="language-plaintext highlighter-rouge">SaveManager</code><li>网络管理器：<code class="language-plaintext highlighter-rouge">NetworkManager</code><li>本地化管理器：<code class="language-plaintext highlighter-rouge">LocalizationManager</code></ul><p><strong>优点：</strong></p><ul><li>保证全局只有一个实例<li>访问方便<li>避免重复创建管理类对象<li>适合管理全局系统</ul><p><strong>缺点：</strong></p><ul><li>容易变成全局变量<li>会增加系统之间的耦合<li>隐藏对象之间的依赖关系<li>不利于测试和替换<li>生命周期管理不当容易出问题</ul><p><strong>一句话总结：</strong> 单例模式通过“唯一实例 + 全局访问点”来管理全局对象，适合游戏中真正唯一、职责明确、生命周期稳定的系统。</p><p><strong>与全局变量的区别：</strong> 单例模式可以控制对象的创建和访问，并封装初始化逻辑；全局变量只是直接暴露数据，缺少封装和控制。</p><p><strong>注意点：</strong> 单例不要为了访问方便而滥用。玩家、敌人、子弹、武器、UI 面板、房间实例等可能存在多个或需要频繁销毁重建的对象，不适合做成单例。</p><p><strong>游戏开发建议：</strong> 真正全局唯一的管理器可以考虑单例；普通游戏对象和战斗实例更适合由上层管理器持有，而不是直接写成单例。</p><h2 id="状态模式state-pattern"><span class="me-2">状态模式（State Pattern）</span><a href="#状态模式state-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>定义：</strong> 状态模式用于让一个对象在内部状态改变时，改变它的行为。对象看起来像是在不同状态下拥有不同的行为逻辑。</p><p><strong>核心思想：</strong></p><blockquote><p>把不同状态下的行为拆分到不同状态类中，对象只保存当前状态，并把行为交给当前状态处理。</p></blockquote><p><strong>主要角色：</strong></p><ul><li><strong>Context / 上下文对象</strong>：拥有状态的对象，例如玩家、敌人、武器。<li><strong>State / 状态接口</strong>：定义所有状态共有的方法。<li><strong>ConcreteState / 具体状态</strong>：具体的状态实现，例如待机、移动、攻击、死亡。</ul><p><strong>游戏中的常见场景：</strong></p><ul><li>玩家状态：待机、移动、跳跃、攻击、死亡<li>敌人 AI：巡逻、追击、攻击、逃跑、死亡<li>武器状态：待机、开火、换弹、冷却<li>UI 状态：打开、关闭、加载中、禁用<li>游戏流程：准备、进行中、暂停、胜利、失败</ul><p><strong>优点：</strong></p><ul><li>避免大量 <code class="language-plaintext highlighter-rouge">if else</code> 或 <code class="language-plaintext highlighter-rouge">switch</code><li>每个状态的逻辑更清晰<li>状态切换更容易管理<li>方便扩展新的状态</ul><p><strong>缺点：</strong></p><ul><li>状态类数量可能变多<li>状态切换关系复杂时不容易追踪<li>简单逻辑使用状态模式可能会过度设计</ul><p><strong>一句话总结：</strong> 状态模式通过“当前状态对象”来决定对象的行为，适合处理玩家、敌人、武器等具有多种状态的游戏对象。</p><p><strong>与普通条件判断的区别：</strong> 普通写法通常把所有状态逻辑写在一个类里，用 <code class="language-plaintext highlighter-rouge">if else</code> 判断；状态模式把不同状态拆成不同类，让每个状态只负责自己的行为。</p><p><strong>静态状态与动态实例状态：</strong></p><ul><li><strong>静态状态</strong>：所有对象共享同一个状态对象，适合没有独立数据的状态，例如待机、移动、死亡。<li><strong>动态实例状态</strong>：每次进入状态都创建新的状态对象，适合需要保存独立数据的状态，例如换弹、蓄力、眩晕、连击。</ul><p><strong>函数指针简化：</strong> 如果状态类没有数据成员，并且只有一个虚函数，可以不用状态类，直接用状态函数表示当前状态。此时 <code class="language-plaintext highlighter-rouge">state_</code> 不再指向状态对象，而是指向状态函数。</p><p><strong>并发状态机：</strong> 一个对象同时拥有多个状态机，适合避免状态组合爆炸。</p><p>例如 FPS 玩家可以同时拥有：</p><ul><li>移动状态：待机、奔跑、跳跃<li>武器状态：待机、开火、换弹<li>生命状态：存活、死亡、眩晕</ul><p><strong>层级状态机：</strong> 状态可以有父子关系，子状态复用父状态的公共逻辑。</p><p>例如：</p><ul><li><code class="language-plaintext highlighter-rouge">Grounded</code>：在地面状态<ul><li><code class="language-plaintext highlighter-rouge">Idle</code><li><code class="language-plaintext highlighter-rouge">Run</code><li><code class="language-plaintext highlighter-rouge">Crouch</code></ul><li><code class="language-plaintext highlighter-rouge">Airborne</code>：空中状态<ul><li><code class="language-plaintext highlighter-rouge">Jump</code><li><code class="language-plaintext highlighter-rouge">Fall</code></ul></ul><p><strong>下推状态机：</strong> 状态用栈来管理，适合临时打断后返回原状态。</p><p>例如 UI 状态：</p><ul><li><code class="language-plaintext highlighter-rouge">Gameplay</code><li>Push <code class="language-plaintext highlighter-rouge">PauseMenu</code><li>Push <code class="language-plaintext highlighter-rouge">SettingsMenu</code><li>Pop 后回到 <code class="language-plaintext highlighter-rouge">PauseMenu</code><li>再 Pop 回到 `Gameplay</ul><p><strong>总结：</strong> 状态模式的关键是把“不同状态下的不同行为”拆分开，让对象只关心当前状态。它能让复杂状态逻辑更清晰，但也要避免在简单场景中过度设计。</p><h2 id="序列型模式sequencing-patterns"><span class="me-2">序列型模式（Sequencing Patterns）</span><a href="#序列型模式sequencing-patterns" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><strong>定义：</strong> 序列型模式用于组织游戏中随时间推进的执行顺序，关注输入、逻辑、物理、动画、渲染、显示之间的时序关系。</p><p>它不是单一模式，而是一组模式，主要包括：</p><ul><li><strong>游戏循环（Game Loop）</strong><li><strong>更新方法（Update Method）</strong><li><strong>双缓冲（Double Buffer）</strong></ul><p><strong>核心思想：</strong></p><blockquote><p>游戏世界看起来是连续、同步变化的，但计算机实际是顺序执行的。序列型模式的目标是管理这种顺序执行带来的时间推进、状态可见性和帧同步问题。</p></blockquote><p><strong>问答整理：</strong></p><p><strong>Q：高 FPS 一定更好吗？</strong> A：不一定。高 FPS 只代表渲染帧率高，不代表帧时间稳定、输入延迟低、物理稳定或网络同步更好。对实时游戏来说，稳定的帧时间往往比单纯高平均 FPS 更重要。</p><p><strong>Q：浮点数误差会影响解帧或高帧率逻辑吗？</strong> A：会有影响，但通常不是主要原因。真正容易导致差异的是帧率变化后，Update 调用次数、计时器采样点、动画事件、物理积分步数和输入采样频率发生变化。浮点误差更多是长期累积或边界判断时的次要因素。</p><p><strong>Q：CPU 和 GPU 过载会出现什么现象？</strong> A：CPU 过载会导致逻辑、物理、输入、网络发包、FixedUpdate 补帧等变慢；GPU 过载会导致渲染排队、输入到显示延迟变大、帧时间波动。两者都会表现为掉帧、卡顿、输入延迟、对枪手感变差。</p><h3 id="游戏循环game-loop"><span class="me-2">游戏循环（Game Loop）</span><a href="#游戏循环game-loop" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 游戏循环是游戏运行的核心控制结构，负责不断驱动输入、逻辑、物理、动画、渲染等系统运行。</p><p>典型结构：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="k">while</span> <span class="p">(</span><span class="n">running</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">processInput</span><span class="p">();</span>
+    <span class="n">update</span><span class="p">(</span><span class="n">deltaTime</span><span class="p">);</span>
+    <span class="n">render</span><span class="p">();</span>
+    <span class="n">present</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>固定时间步结构：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="n">accumulator</span> <span class="o">+=</span> <span class="n">frameTime</span><span class="p">;</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="n">accumulator</span> <span class="o">&gt;=</span> <span class="n">fixedDt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">simulate</span><span class="p">(</span><span class="n">fixedDt</span><span class="p">);</span>
+    <span class="n">accumulator</span> <span class="o">-=</span> <span class="n">fixedDt</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">render</span><span class="p">(</span><span class="n">accumulator</span> <span class="o">/</span> <span class="n">fixedDt</span><span class="p">);</span>
+</pre></table></code></div></div><p>其中：</p><ul><li><code class="language-plaintext highlighter-rouge">simulate(fixedDt)</code> 使用固定时间步，适合物理和核心模拟<li><code class="language-plaintext highlighter-rouge">render(alpha)</code> 使用插值，适合表现层平滑渲染<li><code class="language-plaintext highlighter-rouge">accumulator</code> 用于处理真实帧时间和固定模拟步之间的差异</ul><p><strong>核心要点：</strong></p><ul><li><code class="language-plaintext highlighter-rouge">Update</code> 通常跟随渲染帧率<li><code class="language-plaintext highlighter-rouge">FixedUpdate</code> 或固定步长模拟用于物理和稳定模拟<li>渲染帧率不应该直接决定游戏规则<li>物理更新和渲染更新通常需要分离<li>长帧需要限制最大补帧，避免补帧风暴</ul><p><strong>问答整理：</strong></p><p><strong>Q：FixedUpdate 会在某一帧不执行或执行多次吗？</strong> A：会。FixedUpdate 不是绑定渲染帧，而是绑定固定模拟时间。Unity 会累积真实经过的时间，够一个 fixed timestep 就执行一次，不够就不执行，积压太多就补跑多次。</p><p><strong>Q：如果 FixedUpdate 的理论时间点落在两个 Update 之间怎么办？</strong> A：它不会立刻插入执行。FixedUpdate 不是独立计时器，而是主循环中的一个阶段。理论时间点到了以后，会等到下一帧的 FixedUpdate 阶段再执行，所以 FixedUpdate 的真实调用间隔会波动。</p><p><strong>Q：什么是补帧风暴？</strong> A：某一帧过慢后，固定更新积压；下一帧为了追赶模拟时间补跑多个 FixedUpdate，导致这一帧更慢，随后继续积压，形成恶性循环。</p><p><strong>Q：游戏解帧开放帧率的底层原理是什么？</strong> A：本质是移除或修改原本限制渲染循环频率的机制，例如帧率上限、等待逻辑、VSync 同步或引擎内部的 target frame rate。它主要改变渲染帧率和 Update 调用频率，不一定改变固定模拟频率。</p><p><strong>Q：角色解帧后普通攻击变快的原理是？</strong> A：通常不是攻击数值被改，而是普攻流程中的输入缓冲、连段检测、动画事件、取消窗口、hitlag 或后摇逻辑受帧率影响。高 FPS 让这些边界更频繁被检测，可能更早进入下一段攻击。</p><h3 id="更新方法update-method"><span class="me-2">更新方法（Update Method）</span><a href="#更新方法update-method" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 更新方法让对象或系统在每一帧执行自己的更新逻辑。游戏世界统一调度对象，对象在自己的 <code class="language-plaintext highlighter-rouge">update()</code> 中处理行为。</p><p>典型结构：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">object</span> <span class="o">:</span> <span class="n">objects</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">object</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p><strong>核心思想：</strong></p><blockquote><p>对象只暴露更新入口，主循环统一控制执行时机。</p></blockquote><p><strong>重难点：</strong></p><ul><li>更新是顺序执行的，不是真正同时发生<li>更新顺序会影响结果<li>对象之间可能读取到旧状态或半更新状态<li>遍历时增删对象容易出错<li>每个对象都无脑 Update 会带来性能浪费</ul><h3 id="双缓冲double-buffer"><span class="me-2">双缓冲（Double Buffer）</span><a href="#双缓冲double-buffer" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 双缓冲通过维护两份数据，一份用于读取，一份用于写入，写入完成后交换，避免外部看到中间状态。</p><p>基本结构：</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>front buffer：当前读取 / 显示
+back buffer：当前写入 / 构建
+swap：写完后交换
+</pre></table></code></div></div><p>伪代码：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="n">write</span><span class="p">(</span><span class="n">backBuffer</span><span class="p">);</span>
+<span class="n">swap</span><span class="p">(</span><span class="n">frontBuffer</span><span class="p">,</span> <span class="n">backBuffer</span><span class="p">);</span>
+<span class="n">read</span><span class="p">(</span><span class="n">frontBuffer</span><span class="p">);</span>
+</pre></table></code></div></div><p><strong>核心思想：</strong></p><blockquote><p>用状态快照隐藏顺序写入过程，使结果看起来像同时完成。</p></blockquote><p><strong>常见场景：</strong></p><ul><li>图像渲染<li>多线程读写数据<li>当前帧 / 下一帧状态切换</ul><p><strong>重难点：</strong></p><ul><li>避免读到半更新状态<li>避免更新顺序影响同一帧结果<li>适合“读旧状态，写新状态”的场景<li>需要考虑内存占用、复制成本和同步成本<li>在多线程或渲染管线中，需要保证交换操作的时机安全</ul><h2 id="行为型模式"><span class="me-2">行为型模式</span><a href="#行为型模式" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><h3 id="字节码模式bytecode-pattern"><span class="me-2">字节码模式（Bytecode Pattern）</span><a href="#字节码模式bytecode-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 字节码模式用于把游戏行为编译成一组简单指令，再交给虚拟机解释执行。它的核心作用是：<strong>将行为描述和底层执行逻辑解耦</strong>。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre><td class="rouge-code"><pre><span class="k">enum</span> <span class="n">OpCode</span> <span class="p">{</span>
+    <span class="n">OP_PUSH_CONST</span><span class="p">,</span>
+    <span class="n">OP_GET_TARGET_HP</span><span class="p">,</span>
+    <span class="n">OP_DAMAGE</span><span class="p">,</span>
+    <span class="n">OP_PLAY_EFFECT</span><span class="p">,</span>
+    <span class="n">OP_JUMP_IF_FALSE</span><span class="p">,</span>
+    <span class="n">OP_END</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">VM</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">void</span> <span class="n">run</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">code</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">ip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">OpCode</span> <span class="n">op</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OpCode</span><span class="o">&gt;</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="n">ip</span><span class="o">++</span><span class="p">]);</span>
+            <span class="k">switch</span> <span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="n">OP_PUSH_CONST</span><span class="p">:</span>
+                <span class="n">stack_</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="n">ip</span><span class="o">++</span><span class="p">]);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="n">OP_DAMAGE</span><span class="p">:</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">stack_</span><span class="p">.</span><span class="n">top</span><span class="p">();</span>
+                <span class="n">stack_</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+                <span class="n">dealDamage</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">case</span> <span class="n">OP_PLAY_EFFECT</span><span class="p">:</span>
+                <span class="n">playEffect</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="n">ip</span><span class="o">++</span><span class="p">]);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="n">OP_END</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">stack</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">stack_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>字节码模式的重点不是 <code class="language-plaintext highlighter-rouge">switch</code> 怎么写，而是<strong>指令集怎么设计</strong>。指令太细，例如 <code class="language-plaintext highlighter-rouge">PUSH</code>、<code class="language-plaintext highlighter-rouge">ADD</code>、<code class="language-plaintext highlighter-rouge">MUL</code>，通用性强，但执行步数多、调试困难；指令太粗，例如 <code class="language-plaintext highlighter-rouge">CAST_FIREBALL_TO_NEAREST_ENEMY</code>，执行高效、策划容易理解，但扩展性差。</p><ul><li><strong>栈式虚拟机</strong>：指令格式简单，编译器容易生成，适合技能、任务、剧情这类中低频逻辑<li><strong>寄存器式虚拟机</strong>：VM 指令数量更少，数据流更清晰，性能更好，但编译器和指令格式更复杂。</ul><p>在游戏中使用字节码时，最重要的是边界控制。VM 不应该暴露任意原生函数调用，否则等于让外部逻辑绕过了引擎安全层。</p><p><strong>一句话总结：</strong> 字节码模式通过“指令集 + 虚拟机”把游戏行为变成可控的数据，适合技能、AI、任务、剧情等需要热更新、沙盒化和工具化的系统。它的难点不在解释执行，而在指令边界、调试工具、确定性、性能边界和版本兼容。</p><h3 id="子类沙盒模式subclass-sandbox-pattern"><span class="me-2">子类沙盒模式（Subclass Sandbox Pattern）</span><a href="#子类沙盒模式subclass-sandbox-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 子类沙盒模式让基类提供一组受保护的操作接口，子类只能在这些接口范围内组合自己的行为。它的核心作用是：<strong>允许大量子类自定义行为，同时把危险、复杂、重复的底层细节封装在基类中</strong>。可以理解为，子类可以写特殊逻辑，但只能在父类划好的“沙盒 API”里写。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Skill</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">void</span> <span class="n">cast</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">checkCost</span><span class="p">();</span>
+        <span class="n">playCastAnimation</span><span class="p">();</span>
+        <span class="n">onCast</span><span class="p">();</span>
+        <span class="n">startCooldown</span><span class="p">();</span>
+    <span class="p">}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onCast</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="n">Actor</span><span class="o">*</span> <span class="nf">findNearestEnemy</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">dealDamage</span><span class="p">(</span><span class="n">Actor</span><span class="o">*</span> <span class="n">target</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">addBuff</span><span class="p">(</span><span class="n">Actor</span><span class="o">*</span> <span class="n">target</span><span class="p">,</span> <span class="kt">int</span> <span class="n">buffId</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">playEffect</span><span class="p">(</span><span class="kt">int</span> <span class="n">effectId</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="nf">checkCost</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">playCastAnimation</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">startCooldown</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">FireballSkill</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Skill</span> <span class="p">{</span>
+<span class="nl">protected:</span>
+    <span class="kt">void</span> <span class="n">onCast</span><span class="p">()</span> <span class="k">override</span> <span class="p">{</span>
+        <span class="n">Actor</span><span class="o">*</span> <span class="n">target</span> <span class="o">=</span> <span class="n">findNearestEnemy</span><span class="p">();</span>
+        <span class="n">dealDamage</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+        <span class="n">addBuff</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">BUFF_BURNING</span><span class="p">);</span>
+        <span class="n">playEffect</span><span class="p">(</span><span class="n">EFFECT_FIREBALL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p><strong>子类沙盒和组件模式的区别</strong>：子类沙盒偏继承，适合少量维度上的特殊行为；组件模式偏组合，适合能力排列组合非常多的对象。</p><p><strong>优点：</strong> 子类代码简洁，公共逻辑复用度高，可以限制子类访问范围，并统一处理日志、资源、网络、冷却和异常。</p><p><strong>缺点：</strong> 基类容易膨胀，子类数量可能爆炸，所有子类都会依赖同一个父类，后期维护成本可能变高。</p><p><strong>一句话总结：</strong> 子类沙盒模式通过“父类提供受控能力，子类组合这些能力”来实现可扩展行为，适合技能、怪物、道具等大量相似但细节不同的对象。关键是沙盒 API 要克制，不能把父类做成万能入口。</p><h3 id="类型对象模式type-object-pattern"><span class="me-2">类型对象模式（Type Object Pattern）</span><a href="#类型对象模式type-object-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 类型对象模式用于把“类型”从类继承层次中抽离出来，变成运行时可创建、可配置、可引用的数据对象。它的核心作用是：<strong>用对象表示类型，而不是用类表示类型</strong>。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">MonsterType</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">maxHp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">attack</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">moveSpeed</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">skillIds</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Monster</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">Monster</span><span class="p">(</span><span class="n">MonsterType</span><span class="o">*</span> <span class="n">type</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">type_</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="n">currentHp_</span><span class="p">(</span><span class="n">type</span><span class="o">-&gt;</span><span class="n">maxHp</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="kt">int</span> <span class="n">attack</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">type_</span><span class="o">-&gt;</span><span class="n">attack</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">MonsterType</span><span class="o">*</span> <span class="n">type_</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">currentHp_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>类型对象最重要的边界是：<strong>类型对象保存共享配置，实例对象保存运行时状态</strong>。例如 <code class="language-plaintext highlighter-rouge">MonsterType</code> 可以保存最大生命、基础攻击、移动速度、模型路径、技能列表和掉落表；<code class="language-plaintext highlighter-rouge">Monster</code> 实例保存当前生命、当前位置、当前目标、AI 状态、技能冷却和身上的 Buff。</p><p><strong>类型对象和享元模式的区别</strong>：但关注点不同。享元模式关注节省内存，把重复数据共享出去；类型对象模式关注建模，把“类型”本身从代码类变成数据对象。</p><p><strong>类型对象和原型模式的区别</strong>：原型模式关注通过复制已有对象创建新对象，类型对象关注实例引用一份共享类型配置。一个是“复制模板”，一个是“引用类型”。</p><p>类型对象也可以有继承关系，但要小心继承层次过深、字段覆盖规则不清晰、循环继承、热更新依赖刷新等问题。</p><p><strong>优点：</strong> 减少子类数量，适合数据驱动和热更新，新内容可以通过配置增加，实例共享类型数据也能节省内存。</p><p><strong>缺点：</strong> 类型安全下降，错误更晚暴露，配置校验成本变高；如果行为差异很大，仍然需要代码、脚本或组件系统配合。</p><p><strong>一句话总结：</strong> 类型对象模式通过“用数据对象表示类型”替代大量子类，适合怪物、装备、技能、Buff 等内容量大、参数变化频繁的系统。关键是严格区分共享配置和实例状态。</p><h2 id="解耦型模式"><span class="me-2">解耦型模式</span><a href="#解耦型模式" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>解耦不是让模块之间完全没有依赖，而是让依赖方向清晰、变化范围可控，并通过稳定接口或数据契约协作。</p><p>解耦型模式通常会增加间接调用。接口、消息和组件都能降低直接依赖，但也可能隐藏调用关系。因此在客户端工程中，除了关注类图，还要关注数据所有权、对象生命周期、执行顺序和问题定位能力。</p><h3 id="组件模式component-pattern"><span class="me-2">组件模式（Component Pattern）</span><a href="#组件模式component-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 组件模式把复杂对象的不同能力拆分为多个相对独立的组件，再通过组合组件构建对象。它的核心作用是：<strong>用组合代替不断膨胀的继承层次，让能力能够独立复用和替换。</strong></p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Component</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Component</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onAttach</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">onDetach</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">GameObject</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">,</span> <span class="k">class</span><span class="o">...</span> <span class="nc">Args</span><span class="p">&gt;</span>
+    <span class="n">T</span><span class="o">&amp;</span> <span class="n">addComponent</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">);</span>
+
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">&gt;</span>
+    <span class="n">T</span><span class="o">*</span> <span class="n">getComponent</span><span class="p">();</span>
+
+<span class="nl">private:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Component</span><span class="o">&gt;&gt;</span> <span class="n">components_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>组件模式真正困难的地方不是把 <code class="language-plaintext highlighter-rouge">Player</code> 拆成移动、战斗和动画组件，而是拆分后如何管理这些组件之间的关系。</p><p><strong>数据所有权：</strong> 同一份运行时状态应有明确的唯一所有者。例如角色速度可以由移动组件持有，动画组件只读取速度设置动画参数，不应让两个组件分别保存一份“当前速度”。否则组件执行顺序不同，就可能读到旧值或互相覆盖状态。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">MovementComponent</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">const</span> <span class="n">Vec3</span><span class="o">&amp;</span> <span class="n">velocity</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">velocity_</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">Vec3</span> <span class="n">velocity_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">AnimationComponent</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">explicit</span> <span class="n">AnimationComponent</span><span class="p">(</span><span class="n">MovementComponent</span><span class="o">&amp;</span> <span class="n">movement</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">movement_</span><span class="p">(</span><span class="n">movement</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="kt">void</span> <span class="nf">update</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">animator_</span><span class="p">.</span><span class="n">setFloat</span><span class="p">(</span><span class="s">"Speed"</span><span class="p">,</span> <span class="n">movement_</span><span class="p">.</span><span class="n">velocity</span><span class="p">().</span><span class="n">length</span><span class="p">());</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">MovementComponent</span><span class="o">&amp;</span> <span class="n">movement_</span><span class="p">;</span>
+    <span class="n">Animator</span> <span class="n">animator_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>组件之间并非不能依赖，关键是让依赖显式、稳定并且可以在装配阶段校验。</p><p>常见通信方式包括：</p><ul><li>构造函数或初始化函数注入，适合必须存在的强依赖。<li>通过容器查询其他组件，使用方便，但依赖容易被隐藏。<li>通过事件发送通知，适合一对多广播，但不适合需要立即返回结果的调用。<li>通过共享上下文或黑板交换少量公共数据，但要避免退化成万能数据容器。</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">AttackComponent</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Component</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">bool</span> <span class="n">initialize</span><span class="p">(</span><span class="n">GameObject</span><span class="o">&amp;</span> <span class="n">owner</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">attributes_</span> <span class="o">=</span> <span class="n">owner</span><span class="p">.</span><span class="n">getComponent</span><span class="o">&lt;</span><span class="n">AttributeComponent</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="n">animation_</span> <span class="o">=</span> <span class="n">owner</span><span class="p">.</span><span class="n">getComponent</span><span class="o">&lt;</span><span class="n">AnimationComponent</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="k">return</span> <span class="n">attributes_</span> <span class="o">!=</span> <span class="nb">nullptr</span> <span class="o">&amp;&amp;</span> <span class="n">animation_</span> <span class="o">!=</span> <span class="nb">nullptr</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">AttributeComponent</span><span class="o">*</span> <span class="n">attributes_</span><span class="p">{};</span>
+    <span class="n">AnimationComponent</span><span class="o">*</span> <span class="n">animation_</span><span class="p">{};</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>对于攻击组件来说，属性组件和动画组件是明确依赖。与其在释放技能时才出现空指针，不如在对象装配完成后统一检查依赖是否合法。</p><p><strong>生命周期：</strong> 组件至少要区分创建、挂载、初始化、启用、禁用、重置和销毁。尤其在对象池、场景切换和异步资源加载中，构造函数执行完成并不代表组件已经可以正常工作。</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>Construct → Attach → Initialize → Enable → Update
+          → Disable → Reset → Detach → Destroy
+</pre></table></code></div></div><p>对象池中的组件通常不会真正销毁，因此 <code class="language-plaintext highlighter-rouge">Reset</code> 不能只重置位置和血量，还要清理事件订阅、计时器、协程、目标引用、动画状态和异步回调。</p><p><strong>更新调度：</strong> 不应默认所有组件都需要每帧执行 <code class="language-plaintext highlighter-rouge">Update</code>。不同能力适合不同更新方式：</p><ul><li>输入、相机和表现逻辑通常按渲染帧更新。<li>物理和确定性模拟通常使用固定时间步。<li>远距离 AI、环境检测可以降低更新频率。<li>血量 UI、任务进度和冷却完成更适合事件驱动。</ul><p>当组件数量增加后，可以由调度器按照阶段运行同类组件，而不是让每个对象自行遍历全部组件。</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>Input → Gameplay → Physics → Animation → Camera → RenderPrepare
+</pre></table></code></div></div><p>这种做法能够让更新顺序显式化，也方便后续进行批量处理和多线程拆分。</p><p><strong>组件粒度：</strong> 组件过粗，只是把一个大类拆成几个较小的大类；组件过细，则会产生大量跨组件查询、消息发送和生命周期管理。一个能力是否值得拆成组件，可以判断它是否拥有相对独立的数据、能否被多个对象复用、是否需要独立启停，以及它与其他能力之间是否存在稳定接口。</p><p><strong>与 ECS 的区别：</strong> 传统组件模式通常仍以 <code class="language-plaintext highlighter-rouge">GameObject</code> 为中心，组件中可以同时保存数据和行为。ECS 更强调组件保存数据，系统批量处理同类数据，并利用连续存储改善缓存局部性。Unity 的 <code class="language-plaintext highlighter-rouge">MonoBehaviour</code> 更接近传统组件模型，DOTS/ECS 才更接近数据导向的 ECS。</p><p><strong>优点：</strong> 减少继承层级，能力可以组合和复用，方便编辑器装配，也便于按能力启用或禁用。</p><p><strong>缺点：</strong> 组件依赖和执行顺序容易被隐藏；数据所有权、生命周期和通信方式会成为新的复杂点；大量小对象、虚调用和随机内存访问也可能影响性能。</p><p><strong>一句话总结：</strong> 组件模式通过“按能力组合对象”代替复杂继承。真正需要设计的不是组件数量，而是数据所有权、依赖声明、生命周期和更新调度。</p><h3 id="事件队列模式event-queue-pattern"><span class="me-2">事件队列模式（Event Queue Pattern）</span><a href="#事件队列模式event-queue-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 事件队列模式把事件的产生和处理在时间上解耦。生产者只负责将事件写入队列，消费者在合适的阶段统一读取并处理。它的核心作用是：<strong>让发送者不必立即调用接收者，也不必知道事件最终何时被处理。</strong></p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">PlaySoundEvent</span> <span class="p">{</span>
+    <span class="n">SoundId</span> <span class="n">sound</span><span class="p">;</span>
+    <span class="n">Vec3</span> <span class="n">position</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">volume</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">AudioEventQueue</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">bool</span> <span class="n">push</span><span class="p">(</span><span class="k">const</span> <span class="n">PlaySoundEvent</span><span class="o">&amp;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">events_</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">kMaxEvents</span><span class="p">)</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="n">events_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">flush</span><span class="p">(</span><span class="n">AudioSystem</span><span class="o">&amp;</span> <span class="n">audio</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">event</span> <span class="o">:</span> <span class="n">events_</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">audio</span><span class="p">.</span><span class="n">play</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">sound</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">position</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">volume</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">events_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">static</span> <span class="k">constexpr</span> <span class="kt">size_t</span> <span class="n">kMaxEvents</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">PlaySoundEvent</span><span class="o">&gt;</span> <span class="n">events_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p><strong>与观察者模式的区别：</strong> 观察者模式主要解耦“由谁响应”，通知通常在当前调用栈中同步发生；事件队列进一步解耦“何时响应”。</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>观察者：发布事件 → 遍历订阅者 → 立即执行回调
+事件队列：发布事件 → 写入队列 → 指定阶段统一消费
+</pre></table></code></div></div><p>观察者适合局部系统中的即时通知，例如属性变化后立即刷新依赖状态。事件队列适合跨阶段、跨线程、需要削峰或需要保证处理顺序的消息，例如音频请求、网络消息和资源加载结果。</p><p><strong>事件数据：</strong> 事件最好保存值语义的数据快照，或者保存能够重新校验有效性的稳定 ID，而不是直接携带可能失效的裸指针。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">DamageEvent</span> <span class="p">{</span>
+    <span class="n">EntityId</span> <span class="n">attacker</span><span class="p">;</span>
+    <span class="n">EntityId</span> <span class="n">target</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">damage</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">frame</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>如果事件保存 <code class="language-plaintext highlighter-rouge">Actor* target</code>，等到事件被消费时，目标对象可能已经销毁，或者对应内存已经被对象池中的另一个实例复用。使用实体 ID 或带代数的句柄后，消费者可以在处理时重新检查对象是否仍然有效。</p><p><strong>顺序语义：</strong> 引入事件队列后，需要明确以下规则：</p><ul><li>同一帧内是否严格按照入队顺序处理。<li>消费事件时产生的新事件，是本轮继续消费，还是留到下一轮。<li>同类型事件是否允许重复入队。<li>队列满时是丢弃、覆盖、扩容还是阻塞。<li>高优先级事件是否能够抢占普通事件。</ul><p>为了避免事件处理过程中不断产生新事件并形成无限递归，可以使用当前队列和待处理队列分离的方式。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">EventBus</span><span class="o">::</span><span class="n">dispatch</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">current_</span><span class="p">.</span><span class="n">swap</span><span class="p">(</span><span class="n">pending_</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="n">Event</span><span class="o">&amp;</span> <span class="n">event</span> <span class="o">:</span> <span class="n">current_</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">handle</span><span class="p">(</span><span class="n">event</span><span class="p">);</span> <span class="c1">// 新事件写入 pending_</span>
+    <span class="p">}</span>
+
+    <span class="n">current_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>这样本轮只消费开始时已经存在的事件，处理过程中产生的新事件统一留到下一轮。</p><p><strong>事件语义：</strong> 并不是所有消息都需要逐条、完整地处理。</p><ul><li><code class="language-plaintext highlighter-rouge">ActorDied</code>、<code class="language-plaintext highlighter-rouge">ItemAcquired</code> 属于事实型事件，通常不能随意丢失。<li><code class="language-plaintext highlighter-rouge">RefreshPanel</code>、<code class="language-plaintext highlighter-rouge">PlayFootstep</code> 属于请求型事件，可以根据情况去重、合并或降级。<li>网络延迟、加载进度等状态型消息通常只关心最新值，可以用新值覆盖旧值。</ul><p>例如同一帧连续产生十次“刷新背包界面”请求，最终只刷新一次即可。大量距离很远的脚步声也可以根据优先级和音频通道数量丢弃。</p><p><strong>多线程边界：</strong> 跨线程队列需要处理锁、内存可见性和对象线程安全问题。客户端中的消息量不高时，简单互斥队列或每线程本地队列通常比复杂无锁队列更容易维护。无锁结构只有在锁竞争已经被分析工具确认是瓶颈时才值得使用。</p><p>跨线程事件也不应直接携带只能在主线程访问的引擎对象。后台线程可以传递资源 ID、计算结果或不可变数据，再由主线程解析并应用。</p><p><strong>调试能力：</strong> 事件队列会让调用关系从函数调用栈中消失，因此关键事件最好记录事件类型、生产者、帧号、序列号、关键参数和消费阶段。战斗回放、网络同步和线上问题定位都依赖这种事件轨迹。</p><p><strong>适用场景：</strong> 音频请求、网络消息分发、资源加载结果、任务和成就通知、战斗表现事件、遥测和埋点。</p><p><strong>不适用场景：</strong> 调用方必须立即得到返回值；状态必须在当前调用栈中完成修改；事件延迟会破坏确定性模拟。</p><p><strong>优点：</strong> 解耦发送与处理时机，可以批处理、削峰、跨线程，并统一进行优先级、去重和日志记录。</p><p><strong>缺点：</strong> 状态变化会产生延迟；事件顺序和生命周期更复杂；调用链不直观；队列堆积可能把即时错误变成延迟爆发的问题。</p><p><strong>一句话总结：</strong> 事件队列通过“先记录事件，后统一处理”实现时间解耦。关键不只是入队和出队，而是事件语义、对象有效性、顺序、容量和调试能力。</p><h3 id="服务定位器模式service-locator-pattern"><span class="me-2">服务定位器模式（Service Locator Pattern）</span><a href="#服务定位器模式service-locator-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 服务定位器为全局或广泛使用的服务提供统一查询入口。调用方依赖服务接口，而不是直接依赖具体实现。它的核心作用是：<strong>集中管理公共服务的访问方式和实现替换。</strong></p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">IAudioService</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IAudioService</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">play</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">NullAudioService</span> <span class="k">final</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IAudioService</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">void</span> <span class="n">play</span><span class="p">(</span><span class="n">SoundId</span><span class="p">)</span> <span class="k">override</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Services</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="n">provideAudio</span><span class="p">(</span><span class="n">IAudioService</span><span class="o">&amp;</span> <span class="n">audio</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">audio_</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">audio</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">static</span> <span class="n">IAudioService</span><span class="o">&amp;</span> <span class="n">audio</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">*</span><span class="n">audio_</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="n">NullAudioService</span> <span class="n">nullAudio_</span><span class="p">;</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="n">IAudioService</span><span class="o">*</span> <span class="n">audio_</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">nullAudio_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>调用方不再依赖 <code class="language-plaintext highlighter-rouge">OpenALAudioService</code>、<code class="language-plaintext highlighter-rouge">UnityAudioService</code> 等具体类型，也不需要把音频服务从最上层逐级传递到每一个对象中。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Weapon</span><span class="o">::</span><span class="n">fire</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">Services</span><span class="o">::</span><span class="n">audio</span><span class="p">().</span><span class="n">play</span><span class="p">(</span><span class="n">SoundId</span><span class="o">::</span><span class="n">GunShot</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>与直接访问 <code class="language-plaintext highlighter-rouge">AudioManager::Instance()</code> 相比，服务定位器至少通过接口隔离了具体实现，可以注册真实实现、静音实现或测试替身。</p><p><strong>隐藏依赖：</strong> 服务定位器没有消除依赖，只是把依赖从构造函数中移到了全局查询入口。单看 <code class="language-plaintext highlighter-rouge">Weapon</code> 的成员和构造函数，无法判断它依赖音频服务。任何对象都能访问定位器，也可能导致调用边界和生命周期失控。</p><p>因此，服务定位器更适合职责稳定、作用域明确、调用方很多的基础服务，例如日志、音频、平台接口、遥测、时间源和崩溃上报。</p><p>当前玩家、当前关卡、战斗世界或房间实例通常不适合作为进程级全局服务。这些对象存在切换、重建或多实例需求，更适合由玩法上下文、场景上下文或房间对象显式持有。</p><p><strong>空对象：</strong> 空对象可以让服务缺失时安全地执行无操作，避免调用方到处进行空指针检查。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="n">Services</span><span class="o">::</span><span class="n">audio</span><span class="p">().</span><span class="n">play</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</pre></table></code></div></div><p>未注册真实音频服务时，调用会落到 <code class="language-plaintext highlighter-rouge">NullAudioService</code>。但空对象只适合允许降级的能力。存档、支付或资源系统如果静默失败，可能比直接报告错误更危险，这类服务应在初始化阶段强制校验。</p><p><strong>与依赖注入的区别：</strong> 服务定位器由对象主动查询依赖，使用方便但依赖隐藏；依赖注入由外部把依赖传入对象，依赖关系更显式，也更容易控制作用域和编写测试。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Weapon</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">explicit</span> <span class="n">Weapon</span><span class="p">(</span><span class="n">IAudioService</span><span class="o">&amp;</span> <span class="n">audio</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">audio_</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">IAudioService</span><span class="o">&amp;</span> <span class="n">audio_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>工程中可以组合使用两者：系统入口通过服务定位器获得一次公共服务，再把接口注入局部业务对象。这样既避免参数从程序最上层传遍整个工程，也不会让每一个小对象都能随意访问全局状态。</p><p><strong>生命周期和线程安全：</strong> 需要明确服务何时注册、何时销毁、运行中是否允许替换，以及替换期间是否仍有对象正在调用。较稳妥的约束是启动阶段注册、运行阶段只读，服务生命周期长于所有使用者，只有测试或编辑器环境允许替换。</p><p>如果客户端支持多个游戏世界、多个房间预览或编辑器多场景运行，应使用作用域定位器，而不是所有环境共享一份进程级静态服务。</p><p><strong>与单例模式的区别：</strong> 单例模式关心某个类只能存在一个实例；服务定位器关心调用方如何获得某种服务。定位器中可以注册单例，也可以注册普通对象、代理对象或测试替身。</p><p><strong>优点：</strong> 提供统一访问入口，具体实现可以替换，能够使用空对象和装饰器，也能减少公共服务的层层传参。</p><p><strong>缺点：</strong> 对象依赖被隐藏，容易退化成全局变量集合；初始化顺序、生命周期、多世界隔离和测试状态清理都比较困难。</p><p><strong>一句话总结：</strong> 服务定位器通过“统一入口 + 服务接口”管理公共服务，但它只是受控的全局访问方式，不是消除依赖。使用边界应比普通单例更加严格。</p><h2 id="优化型模式"><span class="me-2">优化型模式</span><a href="#优化型模式" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>优化型模式不是为了让代码看起来更高级，而是针对已经确认的瓶颈改变数据布局、更新策略或对象管理方式。</p><p>优化前应先区分问题来自 CPU 计算、缓存未命中、内存带宽、GPU 提交、运行时分配、垃圾回收、锁竞争，还是资源 I/O。模式必须与瓶颈匹配：对象池无法减少 Draw Call，空间分区无法降低材质切换，脏标记也不能弥补错误的算法复杂度。</p><h3 id="数据局部性模式data-locality-pattern"><span class="me-2">数据局部性模式（Data Locality Pattern）</span><a href="#数据局部性模式data-locality-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 数据局部性模式通过调整数据在内存中的布局，让同一处理阶段需要的数据尽量连续、紧凑地存放，从而提高 CPU 缓存命中率。它的核心作用是：<strong>减少 CPU 等待内存的时间，而不只是减少执行指令。</strong></p><p>传统面向对象结构通常由对象指针和多层成员指针组成：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="k">for</span> <span class="p">(</span><span class="n">Actor</span><span class="o">*</span> <span class="n">actor</span> <span class="o">:</span> <span class="n">actors</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">actor</span><span class="o">-&gt;</span><span class="n">update</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>每个 <code class="language-plaintext highlighter-rouge">Actor</code> 可能继续访问 <code class="language-plaintext highlighter-rouge">Transform</code>、<code class="language-plaintext highlighter-rouge">AIState</code>、<code class="language-plaintext highlighter-rouge">Animation</code> 和 <code class="language-plaintext highlighter-rouge">PhysicsBody</code>。这些对象分散在不同内存位置，CPU 很难提前加载下一次需要的数据，而且一个缓存行中还可能包含当前更新阶段完全不会使用的字段。</p><p>按访问阶段组织数据后，移动系统可以只遍历位置和速度：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">MovementData</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vec3</span><span class="o">&gt;</span> <span class="n">positions</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vec3</span><span class="o">&gt;</span> <span class="n">velocities</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">updateMovement</span><span class="p">(</span><span class="n">MovementData</span><span class="o">&amp;</span> <span class="n">data</span><span class="p">,</span> <span class="kt">float</span> <span class="n">dt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">size_t</span> <span class="n">count</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">positions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">data</span><span class="p">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">.</span><span class="n">velocities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p><strong>AoS 与 SoA：</strong> AoS 是结构体数组，单个对象的字段存放在一起；SoA 是数组结构，同一种字段连续存放。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">Particle</span> <span class="p">{</span>
+    <span class="n">Vec3</span> <span class="n">position</span><span class="p">;</span>
+    <span class="n">Vec3</span> <span class="n">velocity</span><span class="p">;</span>
+    <span class="n">Color</span> <span class="n">color</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">lifetime</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Particle</span><span class="o">&gt;</span> <span class="n">particles</span><span class="p">;</span>
+</pre></table></code></div></div><p>AoS 适合一次处理单个对象的大部分字段。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">Particles</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vec3</span><span class="o">&gt;</span> <span class="n">positions</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vec3</span><span class="o">&gt;</span> <span class="n">velocities</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">lifetimes</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>SoA 适合批量处理同一种字段或少量字段，更有利于缓存和 SIMD。二者没有绝对优劣，应根据热点循环的真实访问方式选择。很多系统最终会使用混合布局，例如物理阶段把位置、速度和半径放在一起，而名称、背包和剧情数据保存在另一块冷数据中。</p><p><strong>热数据与冷数据：</strong> 高频访问的小数据应与低频访问的大数据分离。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">ActorHotData</span> <span class="p">{</span>
+    <span class="n">Vec3</span> <span class="n">position</span><span class="p">;</span>
+    <span class="n">Vec3</span> <span class="n">velocity</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">radius</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">state</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="nc">ActorColdData</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">debugName</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ItemId</span><span class="o">&gt;</span> <span class="n">inventory</span><span class="p">;</span>
+    <span class="n">DialogueData</span> <span class="n">dialogue</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>战斗循环不应因为读取角色位置，就把名称、背包和对话数据一同载入缓存。</p><p><strong>连续存储的边界：</strong> 数据连续并不代表一定更快，还要考虑访问模式、容器扩容、数据对齐、分支预测、虚函数间接调用和多线程伪共享。</p><p>如果系统中只有十几个对象，或每个对象的逻辑分支差异很大，把代码强行改成 SoA 可能只会增加复杂度。数据局部性优化应以性能分析中的缓存未命中、内存带宽或热点循环为依据。</p><p><strong>稳定句柄：</strong> 连续数组删除对象时经常使用交换删除：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="n">items</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">items</span><span class="p">.</span><span class="n">back</span><span class="p">());</span>
+<span class="n">items</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+</pre></table></code></div></div><p>这种操作会改变元素所在位置，因此外部不应长期保存数组元素的裸地址或不带校验的索引。可以使用“索引 + 代数”的句柄：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">EntityHandle</span> <span class="p">{</span>
+    <span class="kt">uint32_t</span> <span class="n">index</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">generation</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>当槽位被复用时递增 <code class="language-plaintext highlighter-rouge">generation</code>，旧句柄即使指向相同索引，也会因为代数不同而被判断为失效。</p><p><strong>与组件模式和 ECS 的关系：</strong> 组件模式主要解决代码组织和能力组合，数据局部性主要解决运行时内存访问。传统组件对象可能分散在堆上，结构清晰但缓存较差。ECS 通常把同类组件连续存放，再由系统批量处理，因此同时涉及组件化和数据局部性，但两者不是同一个概念。</p><p><strong>适用场景：</strong> 大量粒子、单位、投射物、动画采样数据、物理代理、可见性判断和 ECS 系统。</p><p><strong>不适用场景：</strong> 对象数量少、更新频率低、逻辑高度异构，或者性能分析没有显示内存访问是瓶颈。</p><p><strong>优点：</strong> 提高缓存命中率，便于批量处理、向量化和多线程分块。</p><p><strong>缺点：</strong> 数据和行为可能分离，代码可读性下降；对象移动、句柄管理和数据迁移更复杂；数据布局会与具体访问模式绑定。</p><p><strong>一句话总结：</strong> 数据局部性模式通过“让一起处理的数据在内存中靠在一起”减少缓存未命中，优化重点从类的结构转向热点循环的真实访问路径。</p><h3 id="脏标记模式dirty-flag-pattern"><span class="me-2">脏标记模式（Dirty Flag Pattern）</span><a href="#脏标记模式dirty-flag-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 脏标记模式用于缓存计算成本较高的派生结果。当原始数据发生变化时，只把缓存标记为失效，在真正需要结果或指定刷新阶段再重新计算。它的核心作用是：<strong>合并多次修改，避免重复计算派生数据。</strong></p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Transform</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="kt">void</span> <span class="n">setLocalPosition</span><span class="p">(</span><span class="k">const</span> <span class="n">Vec3</span><span class="o">&amp;</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">localPosition_</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+        <span class="n">markWorldDirty</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">const</span> <span class="n">Matrix4</span><span class="o">&amp;</span> <span class="n">worldMatrix</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">worldDirty_</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">worldMatrix_</span> <span class="o">=</span> <span class="n">parent_</span>
+                <span class="o">?</span> <span class="n">parent_</span><span class="o">-&gt;</span><span class="n">worldMatrix</span><span class="p">()</span> <span class="o">*</span> <span class="n">localMatrix</span><span class="p">()</span>
+                <span class="o">:</span> <span class="n">localMatrix</span><span class="p">();</span>
+            <span class="n">worldDirty_</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">worldMatrix_</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="nf">markWorldDirty</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">worldDirty_</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">worldDirty_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">Transform</span><span class="o">*</span> <span class="n">child</span> <span class="o">:</span> <span class="n">children_</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">child</span><span class="o">-&gt;</span><span class="n">markWorldDirty</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="n">worldDirty_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="n">Vec3</span> <span class="n">localPosition_</span><span class="p">{};</span>
+    <span class="n">Matrix4</span> <span class="n">worldMatrix_</span><span class="p">{};</span>
+    <span class="n">Transform</span><span class="o">*</span> <span class="n">parent_</span><span class="p">{};</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Transform</span><span class="o">*&gt;</span> <span class="n">children_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p><strong>原始数据与派生数据：</strong> 使用脏标记前，必须明确哪些数据是权威来源，哪些数据只是可以重新计算的缓存，以及哪些变化会使缓存失效。</p><p>例如本地位置、旋转和缩放是原始数据，世界矩阵是派生数据；装备和 Buff 列表是原始数据，最终攻击力和战斗力可能是派生数据。</p><p>如果原始数据和派生数据的边界不明确，系统就可能同时修改两份状态，导致缓存失去意义。</p><p><strong>刷新方式：</strong> 脏数据通常有两种重算方式。</p><p>按需计算是在第一次读取时重新计算，之后继续使用缓存。它适合派生结果不一定会被访问的场景，但可能把耗时隐藏在任意 getter 中。</p><p>批量刷新是在固定阶段集中重建所有脏数据：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="k">for</span> <span class="p">(</span><span class="n">Transform</span><span class="o">*</span> <span class="n">transform</span> <span class="o">:</span> <span class="n">dirtyTransforms</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">transform</span><span class="o">-&gt;</span><span class="n">rebuildWorldMatrix</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>这种方式更容易统计耗时和安排多线程任务，也能确保后续阶段只读取稳定结果。但脏对象列表需要去重，否则同一对象可能被重复加入并重复计算。</p><p><strong>依赖传播：</strong> 层级结构中，父节点变化会使所有后代的世界变换失效。最直接的方式是递归标记所有子节点，但大型层级可能反复遍历相同子树。</p><p>另一种方式是使用版本号。子节点记录上次计算时使用的父节点版本，如果当前父版本已经变化，就在读取或批量刷新时重新计算。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="k">if</span> <span class="p">(</span><span class="n">cachedParentVersion_</span> <span class="o">!=</span> <span class="n">parent_</span><span class="o">-&gt;</span><span class="n">worldVersion</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">rebuild</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>复杂缓存依赖中，版本号通常比多个布尔值更容易表达“缓存基于哪一版源数据计算”。</p><p><strong>多线程问题：</strong> 按需计算会让一个看似只读的 getter 实际修改缓存。多个线程同时读取时，可能重复计算，也可能发生数据竞争。</p><p>多线程客户端中更稳妥的方式是：在任务阶段批量重建缓存，后续阶段只读。这样能够明确写入边界，也便于设置任务依赖。</p><p><strong>常见错误：</strong></p><ul><li>修改了原始数据却忘记标脏，最终读取到过期结果。<li>一个缓存依赖多个数据源，但只监听了部分变化。<li>在 getter 中进行高成本重算，造成难以预测的帧尖峰。<li>脏标记从未清除，系统退化为每次读取都重新计算。<li>原始计算本身非常便宜，却为了缓存增加大量一致性状态。</ul><p><strong>适用场景：</strong> Transform 层级、UI 布局、装备属性汇总、包围盒、静态合批数据、导航网格局部更新和序列化快照。</p><p><strong>优点：</strong> 能够合并连续修改，避免无效重算，并把昂贵工作延迟到真正需要时或统一阶段执行。</p><p><strong>缺点：</strong> 增加缓存一致性状态；漏标脏会产生隐蔽错误；按需重算可能导致帧尖峰和线程安全问题。</p><p><strong>一句话总结：</strong> 脏标记通过“变化时只声明缓存失效，使用前再重建”减少重复计算。真正困难的不是一个布尔变量，而是完整维护缓存依赖和刷新时机。</p><h3 id="对象池模式object-pool-pattern"><span class="me-2">对象池模式（Object Pool Pattern）</span><a href="#对象池模式object-pool-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 对象池预先或分批创建一组可复用对象，使用时取出，结束后重置并归还，避免高频创建和销毁。它的核心作用是：<strong>控制运行时分配、内存碎片和垃圾回收抖动。</strong></p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre><td class="rouge-code"><pre><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">class</span> <span class="nc">ObjectPool</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="o">...</span> <span class="nc">Args</span><span class="p">&gt;</span>
+    <span class="n">T</span><span class="o">*</span> <span class="n">acquire</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">free_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">storage_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">());</span>
+            <span class="n">free_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">storage_</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">get</span><span class="p">());</span>
+        <span class="p">}</span>
+
+        <span class="n">T</span><span class="o">*</span> <span class="n">object</span> <span class="o">=</span> <span class="n">free_</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+        <span class="n">free_</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+        <span class="n">object</span><span class="o">-&gt;</span><span class="n">onAcquire</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+        <span class="k">return</span> <span class="n">object</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">release</span><span class="p">(</span><span class="n">T</span><span class="o">*</span> <span class="n">object</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">object</span><span class="o">-&gt;</span><span class="n">onRelease</span><span class="p">();</span>
+        <span class="n">free_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">object</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">storage_</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span> <span class="n">free_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>对象池不是简单地把 <code class="language-plaintext highlighter-rouge">new</code> 和 <code class="language-plaintext highlighter-rouge">delete</code> 藏起来。一个池化对象会经历多次逻辑生命周期：</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>从未使用 → 第一次激活 → 归还 → 再次激活 → 再次归还
+</pre></table></code></div></div><p><strong>状态重置：</strong> 对象归还时通常需要清理：</p><ul><li>位置、速度、生命值和计数器。<li>父子节点、场景挂接关系和激活状态。<li>事件订阅、委托、计时器和协程。<li>粒子、动画、拖尾和音频播放状态。<li>目标对象、资源引用和异步回调。<li>网络序列号、帧号、命中列表和伤害记录。</ul><p>只调用 <code class="language-plaintext highlighter-rouge">SetActive(false)</code> 并不代表对象已经安全归还。很多对象池问题都来自上一轮生命周期残留的状态。</p><p><strong>容量策略：</strong> 池容量过小会在战斗高峰临时扩容，仍然产生卡顿；容量过大则会长期占用内存。常见策略包括：</p><ul><li>根据历史峰值预热一部分对象。<li>运行中分批扩容，避免单帧创建大量实例。<li>设置软上限和硬上限。<li>达到上限后丢弃低优先级效果，或回收最旧对象。<li>将场景级对象池与全局对象池分离，场景退出后释放大容量池。</ul><p>移动端尤其需要注意常驻内存。对象池本质上是用更多长期内存和更复杂的状态管理，换取更稳定的运行时分配成本。</p><p><strong>引用有效性：</strong> 对象被归还后，外部可能仍然保存它的旧引用。该对象再次被取出时，同一地址已经表示新的逻辑实例，旧回调或旧事件可能错误地操作它。</p><p>可以使用带代数的池句柄：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">PooledHandle</span> <span class="p">{</span>
+    <span class="kt">uint32_t</span> <span class="n">index</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">generation</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>槽位每次重新分配时递增代数，事件、异步回调和外部引用在访问前检查句柄版本，能够避免旧生命周期继续影响新对象。</p><p><strong>与内存池的区别：</strong> 对象池复用已经构造过的业务对象，重点是对象状态和逻辑生命周期；内存池管理固定大小或特定策略的内存块，重点是分配器开销和内存碎片。对象池可以建立在普通堆上，也可以使用内存池作为底层分配器。</p><p><strong>与原型模式的区别：</strong> 原型模式解决如何从模板创建相似对象，对象池解决如何复用已经创建的实例。实际项目中可以先用原型或配置初始化对象，再将运行时实例放入池中反复使用。</p><p><strong>不适合池化的情况：</strong> 对象创建频率低、生命周期很长；对象内部资源差异很大，重置成本接近重新创建；运行时分配并不是瓶颈；对象池会产生大量闲置内存或复杂悬空引用。</p><p><strong>适用场景：</strong> 子弹、命中特效、飘字、短生命周期 UI 项、敌人波次、音频通道和网络消息缓冲区。</p><p><strong>优点：</strong> 减少高频创建和销毁，降低 GC 抖动和内存碎片，也能够显式控制对象峰值数量。</p><p><strong>缺点：</strong> 状态重置复杂，容量难以估计，旧引用和事件订阅容易污染下一次生命周期，并且会增加常驻内存。</p><p><strong>一句话总结：</strong> 对象池通过“借出—重置—归还”复用短生命周期对象。真正的工程难点是状态隔离、容量策略和引用有效性，而不是维护一个空闲列表。</p><h3 id="空间分区模式spatial-partition-pattern"><span class="me-2">空间分区模式（Spatial Partition Pattern）</span><a href="#空间分区模式spatial-partition-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><strong>定义：</strong> 空间分区模式按照对象在空间中的位置建立索引，使系统只检查附近或相关区域的对象，而不是每次遍历整个世界。它的核心作用是：<strong>把全量空间查询缩小为局部候选集。</strong></p><p>没有空间分区时，搜索附近敌人通常需要遍历所有对象：</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="k">for</span> <span class="p">(</span><span class="n">Actor</span><span class="o">*</span> <span class="n">actor</span> <span class="o">:</span> <span class="n">allActors</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">distance</span><span class="p">(</span><span class="n">actor</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(),</span> <span class="n">center</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">result</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">actor</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>单次查询复杂度是 <code class="language-plaintext highlighter-rouge">O(N)</code>。如果大量单位每帧都进行邻域查询，整体开销可能接近 <code class="language-plaintext highlighter-rouge">O(N²)</code>。</p><p><strong>均匀网格：</strong> 规则地图和对象分布相对均匀时，均匀网格是实现简单、更新成本较低的选择。</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">SpatialGrid</span> <span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CellCoord</span> <span class="n">toCell</span><span class="p">(</span><span class="k">const</span> <span class="n">Vec2</span><span class="o">&amp;</span> <span class="n">position</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">floor</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">cellSize_</span><span class="p">)),</span>
+            <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">floor</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">/</span> <span class="n">cellSize_</span><span class="p">))</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">move</span><span class="p">(</span><span class="n">EntityId</span> <span class="n">id</span><span class="p">,</span> <span class="k">const</span> <span class="n">Vec2</span><span class="o">&amp;</span> <span class="n">oldPosition</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">Vec2</span><span class="o">&amp;</span> <span class="n">newPosition</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">CellCoord</span> <span class="n">oldCell</span> <span class="o">=</span> <span class="n">toCell</span><span class="p">(</span><span class="n">oldPosition</span><span class="p">);</span>
+        <span class="n">CellCoord</span> <span class="n">newCell</span> <span class="o">=</span> <span class="n">toCell</span><span class="p">(</span><span class="n">newPosition</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">oldCell</span> <span class="o">==</span> <span class="n">newCell</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">remove</span><span class="p">(</span><span class="n">oldCell</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+        <span class="n">insert</span><span class="p">(</span><span class="n">newCell</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</pre></table></code></div></div><p>半径查询时只遍历圆形范围覆盖的格子，再对候选对象进行精确距离判断。空间结构只负责粗筛，不能替代最终的阵营过滤、包围体测试和距离检测。</p><p><strong>单元格大小：</strong> 格子太大时，单个格子包含大量对象，查询会退化为局部全量遍历；格子太小时，一次范围查询会跨越很多格子，移动对象也更频繁地更新所属格子。</p><p>格子大小通常应参考最常用的查询半径、对象尺寸和场景密度，再通过实际运行数据调整，不存在适合所有项目的固定值。</p><p><strong>常见空间结构：</strong></p><ul><li>均匀网格或空间哈希适合动态对象多、查询半径相对稳定的场景。<li>四叉树和八叉树适合空间密度差异较大的二维或三维世界。<li>BVH 和动态 AABB Tree 常用于碰撞 Broad Phase 与射线查询。<li>KD-Tree 适合静态或更新不频繁的最近邻查询。<li>导航网格分区适合路径查询和可行走区域管理。</ul><p>空间结构的选择取决于查询类型和对象更新频率。静态树结构通常查询效率较高，但频繁移动时，重新插入和维护结构的成本也可能很高。</p><p><strong>大型对象：</strong> 一个大型对象可能覆盖多个格子。如果只按照中心点放入一个格子，查询边界区域时可能漏掉它；如果放入所有覆盖格子，又会产生重复候选。</p><p>常见处理方式是按包围盒插入多个格子并在查询时去重，或者把大型对象单独放入更高层级的结构中。</p><p><strong>更新与查询时序：</strong> 对象位置变化后，空间索引必须同步更新。较清晰的阶段顺序是：</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>移动或物理更新 → 刷新空间索引 → 邻域查询或碰撞检测
+</pre></table></code></div></div><p>如果移动和查询交错进行，不同对象可能看到一份半更新状态的空间索引。可以通过阶段化更新、双缓冲索引或读写锁解决，但应根据实际并发需求选择，不要默认使用复杂同步结构。</p><p><strong>过滤顺序：</strong> 高效查询通常先执行便宜且排除率高的判断：</p><div class="language-text highlighter-rouge"><div class="code-header"> <span data-label-text="Text"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="已复制！"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>空间格粗筛 → 阵营或类型过滤 → 包围体测试 → 精确距离或碰撞测试
+</pre></table></code></div></div><p>把昂贵计算放在最后，可以显著减少需要执行精确检测的对象数量。</p><p><strong>与物理引擎 Broad Phase 的关系：</strong> 物理引擎通常已经维护碰撞粗筛结构。业务系统是否复用物理查询，要根据查询频率和过滤需求决定。偶尔查找附近单位时，直接使用物理接口可能已经足够；AI、技能和兴趣管理每帧进行大量查询时，单独维护业务空间索引通常更可控。</p><p><strong>适用场景：</strong> 附近敌人搜索、AOE 技能、碰撞 Broad Phase、视野和兴趣管理、音频候选筛选、开放世界实体管理和网络同步区域划分。</p><p><strong>优点：</strong> 大幅减少候选对象数量，使大量单位和大世界中的局部查询能够扩展。</p><p><strong>缺点：</strong> 需要持续维护空间索引；参数选择会直接影响性能；大型对象、动态更新和并发访问会增加复杂度；对象分布极端时结构可能退化。</p><p><strong>一句话总结：</strong> 空间分区通过“先按位置建立索引，再只检查相关区域”避免全量遍历。关键是结构选择、单元尺度、动态维护和最终精确过滤。</p></div><div class="post-tail-wrapper text-muted"><div class="d-flex justify-content-between align-items-center gap-3 mb-3"><div class="post-meta"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/gamedev/">GameDev</a>, <a href="/categories/gameplay/">Gameplay</a></div></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/game-programming-patterns/" class="post-tag no-text-decoration" >game-programming-patterns</a> <a href="/tags/design-patterns/" class="post-tag no-text-decoration" >design-patterns</a> <a href="/tags/command-pattern/" class="post-tag no-text-decoration" >command-pattern</a> <a href="/tags/flyweight-pattern/" class="post-tag no-text-decoration" >flyweight-pattern</a> <a href="/tags/observer-pattern/" class="post-tag no-text-decoration" >observer-pattern</a> <a href="/tags/prototype-pattern/" class="post-tag no-text-decoration" >prototype-pattern</a> <a href="/tags/singleton-pattern/" class="post-tag no-text-decoration" >singleton-pattern</a> <a href="/tags/state-pattern/" class="post-tag no-text-decoration" >state-pattern</a> <a href="/tags/game-loop/" class="post-tag no-text-decoration" >game-loop</a> <a href="/tags/unity/" class="post-tag no-text-decoration" >unity</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> 本文由作者按照 <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> 进行授权</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">分享</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F%20-%20Kloyex&url=https%3A%2F%2Fkloyex.github.io%2Fposts%2Fgame-programming-patterns%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F%20-%20Kloyex&u=https%3A%2F%2Fkloyex.github.io%2Fposts%2Fgame-programming-patterns%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Fkloyex.github.io%2Fposts%2Fgame-programming-patterns%2F&text=%E6%B8%B8%E6%88%8F%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F%20-%20Kloyex" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="分享链接" data-title-succeed="链接已复制！" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">最近更新</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/customer-service-backend-notes/">客服后台开发零散笔记</a><li class="text-truncate lh-lg"> <a href="/posts/game-programming-patterns/">游戏编程模式</a><li class="text-truncate lh-lg"> <a href="/posts/unity-module-lifecycle/">Unity 客户端模块生命周期设计</a><li class="text-truncate lh-lg"> <a href="/posts/fps-client-asset-sources/">FPS 客户端常用素材库</a><li class="text-truncate lh-lg"> <a href="/posts/eventbus-design/">事件总线设计</a></ul></section><section><h2 class="panel-heading">热门标签</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/csharp/">csharp</a> <a class="post-tag btn btn-outline-primary" href="/tags/unity/">unity</a> <a class="post-tag btn btn-outline-primary" href="/tags/architecture/">architecture</a> <a class="post-tag btn btn-outline-primary" href="/tags/observer-pattern/">observer-pattern</a> <a class="post-tag btn btn-outline-primary" href="/tags/aop/">aop</a> <a class="post-tag btn btn-outline-primary" href="/tags/assets/">assets</a> <a class="post-tag btn btn-outline-primary" href="/tags/bootstrap/">bootstrap</a> <a class="post-tag btn btn-outline-primary" href="/tags/command-pattern/">command-pattern</a> <a class="post-tag btn btn-outline-primary" href="/tags/contravariance/">contravariance</a> <a class="post-tag btn btn-outline-primary" href="/tags/covariance/">covariance</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">文章内容</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">相关文章</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/eventbus-design/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1783958400" data-df="YYYY/MM/DD" > 2026/07/14 </time><h4 class="pt-0 my-2">事件总线设计</h4><div class="text-muted"><p>梳理强类型 EventBus 的定位、三层结构、生命周期、Publish 快照、SubscribeOnce 移除时机、Delegate 陷阱与异常隔离，以及「事件 vs 命令」的使用边界。</p></div></div></a></article><article class="col"> <a href="/posts/unity-module-lifecycle/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1784131200" data-df="YYYY/MM/DD" > 2026/07/16 </time><h4 class="pt-0 my-2">Unity 客户端模块生命周期设计</h4><div class="text-muted"><p>梳理 Unity 客户端模块生命周期管理器的设计目标、接口与基类、依赖拓扑排序、作用域、失败回滚与关闭顺序，以及 Init/Start/Update/Shutdown 的职责边界。</p></div></div></a></article><article class="col"> <a href="/posts/fps-client-asset-sources/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1784044800" data-df="YYYY/MM/DD" > 2026/07/15 </time><h4 class="pt-0 my-2">FPS 客户端常用素材库</h4><div class="text-muted"><p>整理 FPS 客户端练习项目可用的免费素材库，覆盖角色动画、枪械模型、场景、材质 HDRI、音效以及 Unity Asset Store 模板。</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/customer-service-backend-notes/" class="btn btn-outline-primary" aria-label="上一篇" ><p>客服后台开发零散笔记</p></a> <a href="/posts/csharp-generics/" class="btn btn-outline-primary" aria-label="下一篇" ><p>C# 泛型</p></a></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://github.com/kloyex">kloyex</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="除非另有说明，本网站上的博客文章均由作者按照知识共享署名 4.0 国际 (CC BY 4.0) 许可协议进行授权。" >保留部分权利。</span></p><p>本站采用 <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> 主题 <a data-bs-toggle="tooltip" data-bs-placement="top" title="v7.6.0" href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener" >Chirpy</a></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">热门标签</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/csharp/">csharp</a> <a class="post-tag btn btn-outline-primary" href="/tags/unity/">unity</a> <a class="post-tag btn btn-outline-primary" href="/tags/architecture/">architecture</a> <a class="post-tag btn btn-outline-primary" href="/tags/observer-pattern/">observer-pattern</a> <a class="post-tag btn btn-outline-primary" href="/tags/aop/">aop</a> <a class="post-tag btn btn-outline-primary" href="/tags/assets/">assets</a> <a class="post-tag btn btn-outline-primary" href="/tags/bootstrap/">bootstrap</a> <a class="post-tag btn btn-outline-primary" href="/tags/command-pattern/">command-pattern</a> <a class="post-tag btn btn-outline-primary" href="/tags/contravariance/">contravariance</a> <a class="post-tag btn btn-outline-primary" href="/tags/covariance/">covariance</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><aside id="notification" class="toast w-auto rounded-5 text-nowrap" role="alert" aria-live="assertive" aria-atomic="true" data-bs-animation="true" data-bs-autohide="false" ><div class="d-flex align-items-center"><div class="toast-body ps-3">发现新内容</div><button type="button" class="btn btn-primary btn-sm rounded-2 py-0" aria-label="Update" >更新</button> <button type="button" class="btn-close mx-3 ms-2" data-bs-dismiss="toast" aria-label="Close" ></button></div></aside><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">搜索结果为空</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>
